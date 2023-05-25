@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { insertProduct } from '../services/products.service';
+import { findAll, insertProduct } from '../services/products.service';
 
 const newProduct = async (req: Request, res: Response) => {
     const { name, orderId, price } = req.body;
@@ -11,7 +11,15 @@ const newProduct = async (req: Request, res: Response) => {
     return res.status(201).json(withoutProductId);
 };
 
+const listProducts = async (_req: Request, res: Response) => {
+
+    const product = await findAll();
+
+    return res.status(200).json(product.data);
+};
+
 
 export default {
     newProduct,
+    listProducts,
 };
