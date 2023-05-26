@@ -1,29 +1,31 @@
-import UserModel from "src/database/models/user.model";
-import { ServiceResponse } from "../types/serviceResponse";
+import bcrypt from 'bcryptjs';
+import UserModel from '../database/models/user.model';
+import { ServiceResponse } from '../types/serviceResponse';
+import jwtUtil from '../utils/jwtUtil';
 
 type LoginServiceResponse = ServiceResponse<{ token: string }>;
 
 export async function login(username: string, password: string): Promise<LoginServiceResponse> {
-    const user = await UserModel.findOne({ where: { username }});
+  const user = await UserModel.findOne({ where: { username } });
 
-    if (!user || user.dataValues.password !== password) {
-        return {
-            status: 'UNAUTHORIZED',
-            data: {
-                message: 'invalid username or password',
-            }
-        }
-    }
-    const token = 'a';
-
+  if (!user || !bcrypt.compareSync(password, user.dataValues.password)) {
     return {
-        status: 'SUCCESSFUL',
-        data: {
-            token,
-        },
+      status: 'UNAUTHORIZED',
+      data: {
+        message: 'Username or password invalid',
+      },
     };
-};
+  }
+  const token = jwtUtil.sign({ id: user.dataValues.id, username: user.dataValues.username });
+
+  return {
+    status: 'SUCCESSFUL',
+    data: {
+      token,
+    },
+  };
+}
 
 export default {
-    login,
+  login,
 };
