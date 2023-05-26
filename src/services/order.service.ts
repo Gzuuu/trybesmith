@@ -1,11 +1,11 @@
 import { ValidOrder } from 'src/types/Order';
 import OrderModel from '../database/models/order.model';
 
-async function getOrders(): Promise<ValidOrder[]> {
+async function getOrders(): Promise<ValidOrder[]>  {
   const orders = await OrderModel.findAll({
     include: 'productIds',
   });
-    
+
   const dataValuesOrder = orders.map((order) => order.dataValues);
 
   const newOrders = dataValuesOrder.map((order) => ({
